@@ -136,19 +136,20 @@
     let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
     let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
 
-    // Dynamically generates catalog entries for folders Gown_Style_001 up to Gown_Style_806
+    // Maps folders matching your exact repository structure: Gown_Style_XXX_Gown_Style_XXX
     let catalogItems = [];
     for (let i = 1; i <= 806; i++) {
       const paddedNum = String(i).padStart(3, '0');
-      const folderName = `Gown_Style_${paddedNum}`;
+      const baseName = `Gown_Style_${paddedNum}`;
+      const folderName = `${baseName}_${baseName}`; // Matches Gown_Style_001_Gown_Style_001
       catalogItems.push({
         id: folderName,
         title: `Casual Elegance Look #${i}`,
         basePrice: 500 + ((i * 15) % 400),
         folder: folderName,
         images: [
-          `${folderName}/${folderName}_a.jpg`, 
-          `${folderName}/${folderName}.jpg`
+          `${folderName}/${baseName}_a.jpg`, 
+          `${folderName}/${baseName}.jpg`
         ]
       });
     }
@@ -287,13 +288,12 @@
 
         let galleryLinksHTML = '';
         item.images.forEach((imgPath, imgIdx) => {
-          // Uses relative path to load directly from GitHub Pages domain, avoiding CORB/CORS restrictions entirely
           const imgURL = `./${imgPath}`;
           if (imgIdx === 0) {
             galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index}" data-lightbox="${item.id}" data-title="${item.title}">
               <img src="${imgURL}" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
             </a>`;
-            galleryLinksHTML += `<div class="absolute inset-0 flex items-center justify-center bg-stone-950 text-stone-400 text-xs text-center p-2" style="display:none;">${item.folder} images loading...</div>`;
+            galleryLinksHTML += `<div class="absolute inset-0 flex items-center justify-center bg-stone-950 text-stone-400 text-xs text-center p-2" style="display:none;">${item.folder} image loading...</div>`;
           } else {
             galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Angle ${imgIdx + 1}"></a>`;
           }
@@ -328,7 +328,7 @@
         card.innerHTML = `
           <div class="aspect-[3/4] bg-stone-950 relative overflow-hidden group cursor-pointer" onclick="document.querySelector('.gallery-item-${index}').click()">
             ${galleryLinksHTML}
-            <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">${item.folder.replace(/_/g, ' ')}</span>
+            <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">${item.folder.split('_')[0]} #${index + 1}</span>
           </div>
           <div class="p-4 flex flex-col flex-grow justify-between bg-stone-900/60">
             <div>
