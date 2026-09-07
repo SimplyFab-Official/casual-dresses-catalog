@@ -136,7 +136,7 @@
     let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
     let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
 
-    // Automatically detects standard vs _a/_b filename variations matching your exact repository files
+    // Automatically maps single-image files robustly for all 806 style items
     let catalogItems = [];
     for (let i = 1; i <= 806; i++) {
       const paddedNum = String(i).padStart(3, '0');
@@ -279,7 +279,7 @@
       }
     }
 
-    // Completely silent fallback chain that seamlessly tests standard vs _a image filenames without throwing any errors or alerts
+    // Completely silent fallback chain that seamlessly tests available image variations without crashing or throwing console syntax errors
     function tryNextImageSource(imgElement, imageList, currentIndex) {
       if (currentIndex + 1 < imageList.length) {
         imgElement.src = `./${imageList[currentIndex + 1]}`;
@@ -287,7 +287,7 @@
           tryNextImageSource(imgElement, imageList, currentIndex + 1);
         };
       } else {
-        imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Style+${currentIndex}`;
+        imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Style+Look`;
       }
     }
 
@@ -298,17 +298,12 @@
 
       catalogItems.forEach((item, index) => {
         const finalPrice = item.basePrice + HIDDEN_MARGIN;
-
-        let galleryLinksHTML = '';
         const primaryURL = `./${item.images[0]}`;
 
-        galleryLinksHTML += `<a href="${primaryURL}" class="gallery-item-${index}" data-lightbox="${item.id}" data-title="${item.title}">
+        // Single clean anchor tag per item, avoiding complex multi-selector issues
+        const galleryHTML = `<a href="${primaryURL}" class="lightbox-trigger" data-lightbox="catalog" data-title="${item.title}">
           <img src="${primaryURL}" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="tryNextImageSource(this, ${JSON.stringify(item.images)}, 0);">
         </a>`;
-
-        for (let imgIdx = 1; imgIdx < item.images.length; imgIdx++) {
-          galleryLinksHTML += `<a href="./${item.images[imgIdx]}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Alt ${imgIdx}"></a>`;
-        }
 
         let priceSectionHTML = '';
         if (isMasterLoggedIn) {
@@ -337,14 +332,14 @@
         const card = document.createElement('div');
         card.className = 'bg-stone-900/80 border border-stone-800 rounded-xl overflow-hidden shadow-xl transition-all hover:border-amber-700/50 flex flex-col';
         card.innerHTML = `
-          <div class="aspect-[3/4] bg-stone-950 relative overflow-hidden group cursor-pointer" onclick="document.querySelector('.gallery-item-${index}').click()">
-            ${galleryLinksHTML}
+          <div class="aspect-[3/4] bg-stone-950 relative overflow-hidden group cursor-pointer">
+            ${galleryHTML}
             <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">GOWN #${index + 1}</span>
           </div>
           <div class="p-4 flex flex-col flex-grow justify-between bg-stone-900/60">
             <div>
               <span class="text-[11px] text-stone-500 uppercase tracking-widest font-mono">Style #${index + 1}</span>
-              <h3 class="font-serif text-stone-100 text-base font-medium mt-0.5">${item.title} / ${item.folder}</h3>
+              <h3 class="font-serif text-stone-100 text-base font-medium mt-0.5">${item.title}</h3>
             </div>
             <div class="mt-4 flex items-center justify-between pt-3 border-t border-stone-800/80">
               ${priceSectionHTML}
@@ -354,8 +349,9 @@
         grid.appendChild(card);
       });
 
+      // Clean, single Lightbox initializer avoiding invalid query selector errors
       if (typeof SimpleLightbox !== 'undefined') {
-        new SimpleLightbox('.grid a', {
+        new SimpleLightbox('.lightbox-trigger', {
           captionsData: 'data-title',
           animationSpeed: 200,
         });
