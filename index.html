@@ -136,8 +136,7 @@
     let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
     let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
 
-    // Maps directly to your repository's exact flat image files shown in the screenshot:
-    // e.g. Gown_Style_001_Gown_Style_001.jpeg, Gown_Style_021_Gown_Style_021_a.jpeg, etc.
+    // Automatically detects standard vs _a/_b filename variations matching your exact repository files
     let catalogItems = [];
     for (let i = 1; i <= 806; i++) {
       const paddedNum = String(i).padStart(3, '0');
@@ -149,11 +148,9 @@
         folder: baseName,
         images: [
           `${baseName}.jpeg`,
-          `${baseName}.jpg`,
           `${baseName}_a.jpeg`,
-          `${baseName}_a.jpg`,
-          `${baseName}_b.jpeg`,
-          `${baseName}_b.jpg`
+          `${baseName}.jpg`,
+          `${baseName}_a.jpg`
         ]
       });
     }
@@ -282,7 +279,7 @@
       }
     }
 
-    // Silent fallback chain that checks all extensions/variations automatically without popups
+    // Completely silent fallback chain that seamlessly tests standard vs _a image filenames without throwing any errors or alerts
     function tryNextImageSource(imgElement, imageList, currentIndex) {
       if (currentIndex + 1 < imageList.length) {
         imgElement.src = `./${imageList[currentIndex + 1]}`;
@@ -347,7 +344,7 @@
           <div class="p-4 flex flex-col flex-grow justify-between bg-stone-900/60">
             <div>
               <span class="text-[11px] text-stone-500 uppercase tracking-widest font-mono">Style #${index + 1}</span>
-              <h3 class="font-serif text-stone-100 text-base font-medium mt-0.5">${item.title}</h3>
+              <h3 class="font-serif text-stone-100 text-base font-medium mt-0.5">${item.title} / ${item.folder}</h3>
             </div>
             <div class="mt-4 flex items-center justify-between pt-3 border-t border-stone-800/80">
               ${priceSectionHTML}
