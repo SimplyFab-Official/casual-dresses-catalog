@@ -68,7 +68,7 @@
     <div class="max-w-3xl mx-auto">
       <h1 class="text-4xl sm:text-5xl font-serif font-light text-stone-100 tracking-tight">Everyday Casual Elegance</h1>
       <p class="text-stone-400 mt-4 text-base sm:text-lg font-light leading-relaxed">
-        Explore our complete catalog spanning 806 style folders. Click any dress photo to zoom in closely.
+        Explore our complete catalog spanning 806 style items. Click any dress photo to zoom in closely.
       </p>
     </div>
   </header>
@@ -136,22 +136,24 @@
     let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
     let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
 
-    // Dynamically maps your exact repository layout where folder name matches the file prefix
+    // Maps directly to your repository's exact flat image files shown in the screenshot:
+    // e.g. Gown_Style_001_Gown_Style_001.jpeg, Gown_Style_021_Gown_Style_021_a.jpeg, etc.
     let catalogItems = [];
     for (let i = 1; i <= 806; i++) {
       const paddedNum = String(i).padStart(3, '0');
-      const baseName = `Gown_Style_${paddedNum}`;
-      const folderName = `${baseName}_${baseName}`; 
+      const baseName = `Gown_Style_${paddedNum}_Gown_Style_${paddedNum}`;
       catalogItems.push({
-        id: folderName,
+        id: baseName,
         title: `Casual Elegance Look #${i}`,
         basePrice: 500 + ((i * 15) % 400),
-        folder: folderName,
+        folder: baseName,
         images: [
-          `${folderName}/${baseName} a.jpg`,
-          `${folderName}/${baseName}_a.jpg`,
-          `${folderName}/${baseName}.jpg`,
-          `${folderName}/item-${paddedNum}.png`
+          `${baseName}.jpeg`,
+          `${baseName}.jpg`,
+          `${baseName}_a.jpeg`,
+          `${baseName}_a.jpg`,
+          `${baseName}_b.jpeg`,
+          `${baseName}_b.jpg`
         ]
       });
     }
@@ -280,7 +282,7 @@
       }
     }
 
-    // Completely silent fallback helper that tries alternative filename variations without throwing alert popups
+    // Silent fallback chain that checks all extensions/variations automatically without popups
     function tryNextImageSource(imgElement, imageList, currentIndex) {
       if (currentIndex + 1 < imageList.length) {
         imgElement.src = `./${imageList[currentIndex + 1]}`;
@@ -288,7 +290,7 @@
           tryNextImageSource(imgElement, imageList, currentIndex + 1);
         };
       } else {
-        imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Catalog+Image`;
+        imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Style+${currentIndex}`;
       }
     }
 
@@ -308,7 +310,7 @@
         </a>`;
 
         for (let imgIdx = 1; imgIdx < item.images.length; imgIdx++) {
-          galleryLinksHTML += `<a href="./${item.images[imgIdx]}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Angle ${imgIdx + 1}"></a>`;
+          galleryLinksHTML += `<a href="./${item.images[imgIdx]}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Alt ${imgIdx}"></a>`;
         }
 
         let priceSectionHTML = '';
@@ -331,7 +333,7 @@
         } else {
           priceSectionHTML = `
             <span class="text-lg font-semibold text-amber-200">₱${finalPrice.toLocaleString()}</span>
-            <span class="text-xs text-amber-300/80 font-medium bg-amber-950/60 border border-amber-800/40 px-2.5 py-1 rounded-full">View Only</span>
+            <span class="text-xs text-amber-300/80 font-medium bg-brand-50 px-2.5 py-1 rounded-full">View Only</span>
           `;
         }
 
@@ -340,7 +342,7 @@
         card.innerHTML = `
           <div class="aspect-[3/4] bg-stone-950 relative overflow-hidden group cursor-pointer" onclick="document.querySelector('.gallery-item-${index}').click()">
             ${galleryLinksHTML}
-            <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">${item.folder.split('_')[0]} #${index + 1}</span>
+            <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">GOWN #${index + 1}</span>
           </div>
           <div class="p-4 flex flex-col flex-grow justify-between bg-stone-900/60">
             <div>
