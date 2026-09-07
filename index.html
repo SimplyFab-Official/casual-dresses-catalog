@@ -136,20 +136,23 @@
     let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
     let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
 
-    // Maps folders matching your exact repository structure: Gown_Style_XXX_Gown_Style_XXX
+    // Dynamically maps folders named Gown_Style_XXX_Gown_Style_XXX containing image filenames matching the folder prefix
     let catalogItems = [];
     for (let i = 1; i <= 806; i++) {
       const paddedNum = String(i).padStart(3, '0');
       const baseName = `Gown_Style_${paddedNum}`;
-      const folderName = `${baseName}_${baseName}`; // Matches Gown_Style_001_Gown_Style_001
+      const folderName = `${baseName}_${baseName}`; 
       catalogItems.push({
         id: folderName,
         title: `Casual Elegance Look #${i}`,
         basePrice: 500 + ((i * 15) % 400),
         folder: folderName,
         images: [
+          `${folderName}/${baseName}_${baseName}_a.jpg`,
           `${folderName}/${baseName}_a.jpg`, 
-          `${folderName}/${baseName}.jpg`
+          `${folderName}/${baseName}.jpg`,
+          `${folderName}/item-${paddedNum}.png`,
+          `${folderName}/image-${paddedNum}.jpg`
         ]
       });
     }
@@ -278,6 +281,19 @@
       }
     }
 
+    // Advanced multi-fallback image loader that loops through possible naming formats silently without popups
+    function tryLoadNextImage(imgElement, imageList, currentIndex) {
+      if (currentIndex + 1 < imageList.length) {
+        imgElement.src = `./${imageList[currentIndex + 1]}`;
+        imgElement.onerror = function() {
+          tryLoadNextImage(imgElement, imageList, currentIndex + 1);
+        };
+      } else {
+        // Final fallback if all standard variations fail
+        imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=No+Image`;
+      }
+    }
+
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       grid.innerHTML = '';
@@ -287,17 +303,17 @@
         const finalPrice = item.basePrice + HIDDEN_MARGIN;
 
         let galleryLinksHTML = '';
-        item.images.forEach((imgPath, imgIdx) => {
-          const imgURL = `./${imgPath}`;
-          if (imgIdx === 0) {
-            galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index}" data-lightbox="${item.id}" data-title="${item.title}">
-              <img src="${imgURL}" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-            </a>`;
-            galleryLinksHTML += `<div class="absolute inset-0 flex items-center justify-center bg-stone-950 text-stone-400 text-xs text-center p-2" style="display:none;">${item.folder} image loading...</div>`;
-          } else {
-            galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Angle ${imgIdx + 1}"></a>`;
-          }
-        });
+        const primaryURL = `./${item.images[0]}`;
+
+        // Build first thumbnail link with silent fallback chain
+        galleryLinksHTML += `<a href="${primaryURL}" class="gallery-item-${index}" data-lightbox="${item.id}" data-title="${item.title}">
+          <img src="${primaryURL}" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="tryLoadNextImage(this, ${JSON.stringify(item.images)}, 0);">
+        </a>`;
+
+        // Additional angles for lightbox zooming
+        for (let imgIdx = 1; imgIdx < item.images.length; imgIdx++) {
+          galleryLinksHTML += `<a href="./${item.images[imgIdx]}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Angle ${imgIdx + 1}"></a>`;
+        }
 
         let priceSectionHTML = '';
         if (isMasterLoggedIn) {
