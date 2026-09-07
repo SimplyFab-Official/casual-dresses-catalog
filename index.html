@@ -54,7 +54,7 @@
         <button id="logsBtn" onclick="toggleLogsModal()" class="hidden text-xs uppercase tracking-wider font-semibold text-amber-300 hover:text-stone-100 border border-amber-700/50 hover:border-amber-500 px-3.5 py-2 rounded-full transition-all bg-amber-950/40">
           Activity Logs
         </button>
-        <!-- Master Login button is completely hidden by default for normal visitors -->
+        <!-- Master Login button hidden by default -->
         <button id="masterLoginBtn" onclick="toggleAuthModal()" class="hidden text-xs uppercase tracking-wider font-semibold text-stone-300 hover:text-stone-100 border border-stone-700 hover:border-stone-500 px-4 py-2 rounded-full transition-all items-center gap-1.5 bg-stone-800/60">
           <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           Master Login
@@ -148,8 +148,12 @@
         images: [
           `${baseName}.jpeg`,
           `${baseName}_a.jpeg`,
+          `${baseName}_b.jpeg`,
           `${baseName}.jpg`,
-          `${baseName}_a.jpg`
+          `${baseName}_a.jpg`,
+          `${baseName}_b.jpg`,
+          `${baseName}_a.JPG`,
+          `${baseName}_b.JPG`
         ]
       });
     }
@@ -164,6 +168,7 @@
       } catch(e) {}
     }
 
+    // Secret Key combination to reveal the Master Login button: Press 'Ctrl + Shift + M'
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'm') {
         const btn = document.getElementById('masterLoginBtn');
@@ -277,17 +282,24 @@
       }
     }
 
-    function handleImageError(imgElement, imageList) {
-      const currentSrc = imgElement.getAttribute('data-src-index');
-      let nextIdx = currentSrc ? parseInt(currentSrc) + 1 : 1;
-      if (nextIdx < imageList.length) {
-        imgElement.setAttribute('data-src-index', nextIdx);
-        imgElement.src = `./${imageList[nextIdx]}`;
-        const parentAnchor = imgElement.closest('a');
-        if (parentAnchor) {
-          parentAnchor.href = `./${imageList[nextIdx]}`;
+    // Completely safe, silent fallback loop that avoids string injection syntax errors and console errors
+    function handleImageError(imgElement, imageListStr) {
+      try {
+        const imageList = JSON.parse(imageListStr);
+        const currentSrc = imgElement.getAttribute('data-src-index');
+        let nextIdx = currentSrc ? parseInt(currentSrc) + 1 : 1;
+        
+        if (nextIdx < imageList.length) {
+          imgElement.setAttribute('data-src-index', nextIdx);
+          imgElement.src = `./${imageList[nextIdx]}`;
+          const parentAnchor = imgElement.closest('a');
+          if (parentAnchor) {
+            parentAnchor.href = `./${imageList[nextIdx]}`;
+          }
+        } else {
+          imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Simply+Fab+Gown`;
         }
-      } else {
+      } catch (err) {
         imgElement.src = `https://placehold.co/600x800/1c1917/d6d3d1?text=Simply+Fab+Gown`;
       }
     }
@@ -300,9 +312,10 @@
       catalogItems.forEach((item, index) => {
         const finalPrice = item.basePrice + HIDDEN_MARGIN;
         const primaryURL = `./${item.images[0]}`;
+        const escapedImageList = JSON.stringify(item.images).replace(/"/g, '&quot;');
 
         const galleryHTML = `<a href="${primaryURL}" class="lightbox-item-${index}" data-lightbox="catalog" data-title="${item.title}">
-          <img src="${primaryURL}" data-src-index="0" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="handleImageError(this, ${JSON.stringify(item.images).replace(/"/g, '&quot;')});">
+          <img src="${primaryURL}" data-src-index="0" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="handleImageError(this, '${escapedImageList}');">
         </a>`;
 
         let priceSectionHTML = '';
