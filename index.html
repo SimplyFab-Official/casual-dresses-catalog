@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simply Fab | Casual Dresses Collection</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SimpleLightbox CSS for image zooming -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.0/simple-lightbox.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fcf8f6',
+              100: '#f7eeeb',
+              600: '#8c6d62',
+              700: '#73554b',
+              800: '#5c433a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .sl-overlay { background: rgba(28, 25, 23, 0.95); }
+    .sl-close { color: #d6d3d1; }
+    .sl-counter { color: #a8a29e; }
+    .sl-navigation button { color: #d6d3d1; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-stone-900 via-stone-800 to-amber-950 text-stone-100 font-sans antialiased min-h-screen flex flex-col selection:bg-amber-500 selection:text-stone-950">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-gradient-to-r from-amber-900 via-stone-900 to-amber-900 text-amber-200 text-xs py-2.5 px-4 text-center tracking-widest uppercase font-medium border-b border-amber-800/40">
+    ✨ New Casual Collection 2026 • Neat, Chic & Everyday Elegance
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sticky top-0 z-40 bg-stone-900/85 backdrop-blur-md border-b border-stone-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl font-serif tracking-wide text-stone-100 font-bold">Simply Fab</span>
+        <span class="hidden sm:inline-block text-xs uppercase tracking-widest text-amber-400/80 border-l border-stone-700 pl-3">Casual Dresses</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="authStatusBadge" class="hidden items-center gap-2 bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 text-xs px-3 py-1.5 rounded-full font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Master Mode Active
+        </div>
+        <button id="logsBtn" onclick="toggleLogsModal()" class="hidden text-xs uppercase tracking-wider font-semibold text-amber-300 hover:text-stone-100 border border-amber-700/50 hover:border-amber-500 px-3.5 py-2 rounded-full transition-all bg-amber-950/40">
+          Activity Logs
+        </button>
+        <!-- Master Login button is completely hidden by default for normal visitors -->
+        <button id="masterLoginBtn" onclick="toggleAuthModal()" class="hidden text-xs uppercase tracking-wider font-semibold text-stone-300 hover:text-stone-100 border border-stone-700 hover:border-stone-500 px-4 py-2 rounded-full transition-all items-center gap-1.5 bg-stone-800/60">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          Master Login
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-gradient-to-b from-stone-900/60 to-stone-900/20 border-b border-stone-800 py-16 px-4 text-center">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-4xl sm:text-5xl font-serif font-light text-stone-100 tracking-tight">Everyday Casual Elegance</h1>
+      <p class="text-stone-400 mt-4 text-base sm:text-lg font-light leading-relaxed">
+        Explore our complete catalog spanning 806 style folders. Click any dress photo to zoom in closely.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Catalog Grid -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-xl font-serif text-stone-200">Current Collection Lookbook</h2>
+        <p id="modeDescription" class="text-xs text-stone-400 mt-0.5">Click on any photo to zoom in for high-resolution inspection.</p>
+      </div>
+      <span id="itemCountBadge" class="text-xs text-stone-400 font-medium bg-stone-800/80 px-3 py-1 rounded-full border border-stone-700">Loading catalog...</span>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Populated dynamically -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-stone-900 border-t border-stone-800 py-8 text-center text-xs text-stone-500">
+    <p>&copy; 2026 Simply Fab Casual Dresses. Hosted on GitHub Pages.</p>
+  </footer>
+
+  <!-- Master Login Modal -->
+  <div id="authModal" class="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-stone-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-800 text-stone-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-serif font-semibold text-amber-200">Master Portal Authentication</h3>
+        <button onclick="toggleAuthModal()" class="text-stone-400 hover:text-stone-200 text-xl">&times;</button>
+      </div>
+      <p class="text-xs text-stone-400 mb-4">Enter master credentials to unlock base cost editing and activity tracker logs.</p>
+      <div class="space-y-3">
+        <input type="text" id="adminUser" placeholder="Master Username" class="w-full text-sm bg-stone-950 border border-stone-700 rounded-lg px-3 py-2.5 text-stone-100 focus:outline-none focus:border-amber-500" value="master">
+        <input type="password" id="adminPass" placeholder="Master Password" class="w-full text-sm bg-stone-950 border border-stone-700 rounded-lg px-3 py-2.5 text-stone-100 focus:outline-none focus:border-amber-500" value="fab2026">
+        <button onclick="performLogin()" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold text-sm py-2.5 rounded-lg transition-colors">Login & Enable Editing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Logs Modal -->
+  <div id="logsModal" class="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-stone-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-stone-800 text-stone-100 flex flex-col max-h-[85vh]">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-stone-800">
+        <h3 class="text-lg font-serif font-semibold text-amber-200">Price Update Tracker Logs</h3>
+        <button onclick="toggleLogsModal()" class="text-stone-400 hover:text-stone-200 text-xl">&times;</button>
+      </div>
+      <p class="text-xs text-stone-400 mb-3">Recorded modification history:</p>
+      <div id="logsContainer" class="flex-grow overflow-y-auto space-y-2 pr-1 text-xs font-mono bg-stone-950 p-3 rounded-lg border border-stone-800">
+        <!-- Logs populated dynamically -->
+      </div>
+      <div class="mt-4 pt-3 border-t border-stone-800 flex justify-between items-center">
+        <button onclick="clearLogs()" class="text-xs text-red-400 hover:text-red-300">Clear Logs</button>
+        <button onclick="toggleLogsModal()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs px-4 py-2 rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SimpleLightbox JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.0/simple-lightbox.min.js"></script>
+  <script>
+    // GitHub Repository Configuration updated for casual-dresses-catalog
+    // IMPORTANT: Replace "YourGitHubUsername" with your actual GitHub username!
+    const GITHUB_USER = "YourGitHubUsername"; 
+    const GITHUB_REPO = "casual-dresses-catalog"; 
+    const GITHUB_BRANCH = "main";
+    const HIDDEN_MARGIN = 700;
+
+    let isMasterLoggedIn = localStorage.getItem('simply_fab_master_logged') === 'true';
+    let activityLogs = JSON.parse(localStorage.getItem('simply_fab_logs') || '[]');
+
+    // Dynamically generates catalog entries for folders Gown_Style_001 up to Gown_Style_806
+    let catalogItems = [];
+    for (let i = 1; i <= 806; i++) {
+      const paddedNum = String(i).padStart(3, '0');
+      const folderName = `Gown_Style_${paddedNum}`;
+      catalogItems.push({
+        id: folderName,
+        title: `Casual Elegance Look #${i}`,
+        basePrice: 500 + ((i * 15) % 400),
+        folder: folderName,
+        images: [`${folderName}_a.jpg`, `${folderName}_b.jpg`]
+      });
+    }
+
+    const savedPrices = localStorage.getItem('simply_fab_base_prices');
+    if (savedPrices) {
+      try {
+        const customPrices = JSON.parse(savedPrices);
+        catalogItems.forEach(item => {
+          if (customPrices[item.id] !== undefined) item.basePrice = customPrices[item.id];
+        });
+      } catch(e) {}
+    }
+
+    // Secret Key combination to reveal the Master Login button: Press 'Ctrl + Shift + M'
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'm') {
+        const btn = document.getElementById('masterLoginBtn');
+        btn.classList.toggle('hidden');
+        btn.classList.toggle('flex');
+        alert(btn.classList.contains('flex') ? 'Master Login button revealed!' : 'Master Login button hidden.');
+      }
+    });
+
+    function checkAuthState() {
+      const badge = document.getElementById('authStatusBadge');
+      const loginBtn = document.getElementById('masterLoginBtn');
+      const logsBtn = document.getElementById('logsBtn');
+      const desc = document.getElementById('modeDescription');
+
+      if (isMasterLoggedIn) {
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+        logsBtn.classList.remove('hidden');
+        loginBtn.classList.remove('hidden');
+        loginBtn.classList.add('flex');
+        loginBtn.textContent = 'Master Logout';
+        loginBtn.onclick = performLogout;
+        desc.textContent = 'Master mode active: Edit base costs below. Click images to zoom.';
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        logsBtn.classList.add('hidden');
+        loginBtn.classList.add('hidden');
+        loginBtn.classList.remove('flex');
+        loginBtn.textContent = 'Master Login';
+        loginBtn.onclick = toggleAuthModal;
+        desc.textContent = 'Click on any image to zoom in and view details.';
+      }
+    }
+
+    function toggleAuthModal() {
+      document.getElementById('authModal').classList.toggle('hidden');
+    }
+
+    function toggleLogsModal() {
+      renderLogs();
+      document.getElementById('logsModal').classList.toggle('hidden');
+    }
+
+    function performLogin() {
+      const u = document.getElementById('adminUser').value;
+      const p = document.getElementById('adminPass').value;
+      if (u === 'master' && p === 'fab2026') {
+        isMasterLoggedIn = true;
+        localStorage.setItem('simply_fab_master_logged', 'true');
+        toggleAuthModal();
+        checkAuthState();
+        renderCatalog();
+      } else {
+        alert('Invalid Master Credentials.');
+      }
+    }
+
+    function performLogout() {
+      isMasterLoggedIn = false;
+      localStorage.setItem('simply_fab_master_logged', 'false');
+      checkAuthState();
+      renderCatalog();
+    }
+
+    function logActivity(actionText) {
+      const timestamp = new Date().toLocaleString();
+      const logEntry = `[${timestamp}] ${actionText}`;
+      activityLogs.unshift(logEntry);
+      if (activityLogs.length > 50) activityLogs.pop();
+      localStorage.setItem('simply_fab_logs', JSON.stringify(activityLogs));
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logsContainer');
+      if (activityLogs.length === 0) {
+        container.innerHTML = '<p class="text-stone-500 text-center py-4">No modification logs recorded yet.</p>';
+        return;
+      }
+      container.innerHTML = activityLogs.map(log => `<div class="p-2 border-b border-stone-800 text-amber-300/90">${log}</div>`).join('');
+    }
+
+    function clearLogs() {
+      if (confirm('Are you sure you want to clear all activity tracker logs?')) {
+        activityLogs = [];
+        localStorage.removeItem('simply_fab_logs');
+        renderLogs();
+      }
+    }
+
+    function updateBasePrice(index, newBaseVal) {
+      const parsed = parseFloat(newBaseVal);
+      const oldBase = catalogItems[index].basePrice;
+      const newBase = isNaN(parsed) ? 0 : parsed;
+
+      if (oldBase !== newBase) {
+        catalogItems[index].basePrice = newBase;
+        
+        const priceMap = {};
+        catalogItems.forEach(i => priceMap[i.id] = i.basePrice);
+        localStorage.setItem('simply_fab_base_prices', JSON.stringify(priceMap));
+
+        logActivity(`Updated base price for "${catalogItems[index].title}" (${catalogItems[index].id}) from ₱${oldBase} to ₱${newBase}`);
+      }
+
+      const totalDisplay = document.getElementById(`customer_total_${index}`);
+      if (totalDisplay) {
+        const finalCalculated = newBase + HIDDEN_MARGIN;
+        totalDisplay.textContent = `₱${finalCalculated.toLocaleString()}`;
+      }
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = '';
+      document.getElementById('itemCountBadge').textContent = `${catalogItems.length} Casual Styles`;
+
+      catalogItems.forEach((item, index) => {
+        const finalPrice = item.basePrice + HIDDEN_MARGIN;
+
+        let galleryLinksHTML = '';
+        item.images.forEach((imgName, imgIdx) => {
+          const imgURL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${item.folder}/${imgName}`;
+          if (imgIdx === 0) {
+            galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index}" data-lightbox="${item.id}" data-title="${item.title}">
+              <img src="${imgURL}" alt="${item.title}" class="object-cover w-full h-full opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" onerror="this.src='https://placehold.co/600x800/1c1917/d6d3d1?text=Simply+Fab+Dress'">
+            </a>`;
+          } else {
+            galleryLinksHTML += `<a href="${imgURL}" class="gallery-item-${index} hidden" data-lightbox="${item.id}" data-title="${item.title} - Angle ${imgIdx + 1}"></a>`;
+          }
+        });
+
+        let priceSectionHTML = '';
+        if (isMasterLoggedIn) {
+          priceSectionHTML = `
+            <div class="flex flex-col gap-1.5 w-full bg-stone-950/80 border border-amber-900/40 p-2.5 rounded-lg">
+              <div class="flex items-center justify-between text-[11px] text-stone-300 font-medium">
+                <span>Base Cost:</span>
+                <div class="flex items-center gap-1">
+                  <span>₱</span>
+                  <input type="number" value="${item.basePrice}" class="w-20 text-xs font-bold text-amber-200 bg-stone-900 border border-stone-700 rounded px-1.5 py-0.5 text-right focus:outline-none focus:border-amber-500" onchange="updateBasePrice(${index}, this.value)" placeholder="Base">
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-800">
+                <span>Customer Price (+₱700):</span>
+                <span id="customer_total_${index}" class="font-bold text-amber-400">₱${finalPrice.toLocaleString()}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          priceSectionHTML = `
+            <span class="text-lg font-semibold text-amber-200">₱${finalPrice.toLocaleString()}</span>
+            <span class="text-xs text-amber-300/80 font-medium bg-amber-950/60 border border-amber-800/40 px-2.5 py-1 rounded-full">View Only</span>
+          `;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'bg-stone-900/80 border border-stone-800 rounded-xl overflow-hidden shadow-xl transition-all hover:border-amber-700/50 flex flex-col';
+        card.innerHTML = `
+          <div class="aspect-[3/4] bg-stone-950 relative overflow-hidden group cursor-pointer" onclick="document.querySelector('.gallery-item-${index}').click()">
+            ${galleryLinksHTML}
+            <span class="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-md text-amber-200 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border border-stone-800 pointer-events-none">${item.folder.replace(/_/g, ' ')}</span>
+          </div>
+          <div class="p-4 flex flex-col flex-grow justify-between bg-stone-900/60">
+            <div>
+              <span class="text-[11px] text-stone-500 uppercase tracking-widest font-mono">Style #${index + 1}</span>
+              <h3 class="font-serif text-stone-100 text-base font-medium mt-0.5">${item.title}</h3>
+            </div>
+            <div class="mt-4 flex items-center justify-between pt-3 border-t border-stone-800/80">
+              ${priceSectionHTML}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      if (typeof SimpleLightbox !== 'undefined') {
+        new SimpleLightbox('.grid a', {
+          captionsData: 'data-title',
+          animationSpeed: 200,
+        });
+      }
+    }
+
+    checkAuthState();
+    renderCatalog();
+  </script>
+</body>
+</html>
